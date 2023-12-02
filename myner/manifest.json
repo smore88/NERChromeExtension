@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "NER Chrome Extension",
+    "version": "1.0",
+    "description": "An extension to highlight mentions of named entities on a webpage",
+
+    "permissions": [
+      "tabs",
+      "http://127.0.0.1:8000/myner/receive_webpage_contents/",
+		  "background",
+      "identity",
+      "notifications",
+      "activeTab",
+      "storage"
+	  ],
+
+    "action": {
+      "default_popup": "popup.html"
+    },
+
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "css": ["content.css"]
+      }
+    ],
+
+    "background": {
+      "service_worker": "background.js"
+    }
+}
