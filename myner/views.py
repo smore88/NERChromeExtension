@@ -19,7 +19,8 @@ def receive_webpage_contents(request):
             2. push_back the [{tag, [{text, label, start, end}, ....]}]
         '''
 
-        nlp = spacy.load("en_core_web_sm")
+        custom_ner_model_path = "/Users/shubham/ForwardDataLabTask1/custom_ner_model"
+        nlp = spacy.load(custom_ner_model_path)
         entities = []
         for entry in rawTagText:
             currTag = entry['tag']

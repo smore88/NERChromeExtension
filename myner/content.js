@@ -6,15 +6,46 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 
-function extractText() {
+// function extractText() {
+//     var extractedText = [];
+//     for (var node of document.querySelectorAll('*')) {
+//         if(node.nodeType === 1 && node.textContent.trim()) {
+//             extractedText.push({'tag' : node.tagName, 'text' : node.textContent});
+//         }
+//     }
+//     return extractedText;
+// }
+
+// Depth first search recursion approach to find the deepest, innermost tag that contains text that has no children
+function extractText(node) {
     var extractedText = [];
-    for (var node of document.querySelectorAll('*')) {
-        if(node.nodeType === 1 && node.textContent.trim()) {
-            extractedText.push({'tag' : node.tagName, 'text' : node.textContent});
+
+    function processNode(currentNode) {
+        if (currentNode.nodeType === 1 && currentNode.textContent.trim() && isElementVisible(currentNode)) {
+            if (currentNode.children.length === 0) {
+                extractedText.push({'tag': currentNode.tagName, 'text': currentNode.textContent});
+            } else {
+                for (var i = 0; i < currentNode.children.length; i++) {
+                    processNode(currentNode.children[i]);
+                }
+            }
         }
     }
+
+    processNode(node || document.body);
     return extractedText;
 }
+
+function isElementVisible(element) {
+    var style = getComputedStyle(element);
+    return (
+        element.offsetWidth > 0 &&
+        element.offsetHeight > 0 &&
+        style.display !== 'none' &&
+        style.visibility !== 'hidden'
+    );
+}
+
 
 // chrome.runtime.onMessage.addListener(
 //     function(request, sender, sendResponse) {
@@ -124,8 +155,7 @@ chrome.runtime.onMessage.addListener(
         // Perform the highlighting logic here
         if (request.action === "highlightEntities") {
             console.log("we got the entities are now we are in the content.js about to higlight")
-            const tagEntitiesArr = request.tagEntitiesArr; // keep the original
-            // const tagEntitiesArrCopy = tagEntitiesArr; // edit the copy
+            const tagEntitiesArr = request.tagEntitiesArr;
             console.log(tagEntitiesArr);
 
             for(let entry of tagEntitiesArr) { // go through each entry
