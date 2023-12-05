@@ -130,21 +130,41 @@ function foundAllEntities(entities, currTextInTag) {
 function createStyledSpan(textToHighlight, entityType) {
     let backgroundColor, textColor;
 
-    if (entityType == "DATE") {
-        backgroundColor = 'green';
+    if (entityType == "TIM") {
+        backgroundColor = '#FFC0C0';
+        textColor = 'black';
+    } else if (entityType == "GPE") {
+        backgroundColor = '#C0FFC0';
+        textColor = 'black';
+    } else if (entityType == "GEO") {
+        backgroundColor = '#C0C0FF';
         textColor = 'black';
     } else if (entityType == "ORG") {
-        backgroundColor = 'lightgray';
+        backgroundColor = '#FFFFC0';
+        textColor = 'black';
+    } else if (entityType == "PER") {
+        backgroundColor = '#E6E6FA';
+        textColor = 'black';
+    } else if (entityType == "ART") {
+        backgroundColor = '#FFDAB9';
+        textColor = 'black';
+    } else if (entityType == "EVE") {
+        backgroundColor = '#D2B48C';
+        textColor = 'black';
+    } else if (entityType == "NAT") {
+        backgroundColor = '#D3D3D3';
         textColor = 'black';
     } else {
-        backgroundColor = 'yellow';
+        backgroundColor = '#EEF4ED';
         textColor = 'black';
     }
 
     const styledSpan = document.createElement('span');
     styledSpan.style.backgroundColor = backgroundColor;
     styledSpan.style.color = textColor;
-    styledSpan.textContent = textToHighlight;
+    // styledSpan.textContent = textToHighlight;
+    styledSpan.textContent = `${textToHighlight}\u00A0(${entityType})`;
+
 
     return styledSpan;
 }
@@ -166,7 +186,6 @@ chrome.runtime.onMessage.addListener(
                 const tagType = document.querySelectorAll(currTag);
                 for (const tType of tagType) {
                     var currTextInTag = tType.textContent;
-                    let currTextCpy = currTextInTag;
                     console.log(currTextInTag);
 
                     let newText = ""
@@ -185,11 +204,11 @@ chrome.runtime.onMessage.addListener(
                             const toHighlight = segment.toHighlight;
                             const type = segment.type;
 
-                            if(highlighted == false) { // this means its a not highlighted to just append
+                            if(highlighted == false) { // this means its a not highlighted so just append
                                 newText += currTextInTag.substring(firstChar, lastChar);
                             } else if(highlighted == true) {
-                                const styledSpan = createStyledSpan(toHighlight, type);
-                                newText += styledSpan.outerHTML;
+                                const styledWord = createStyledSpan(toHighlight, type); // highlight the actual word + entityType as well
+                                newText += styledWord.outerHTML;
                             }
                         }
                         tType.innerHTML = newText;
